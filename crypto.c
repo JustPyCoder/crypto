@@ -80,7 +80,6 @@ int main(int argc, char *argv[]){
 				flag+=2;
 				if (flag == 32){
 					copy(hashb,hash);
-					//strcpy(hashb,hash);
 					create_hash(hash,hashb);
 					flag = 0;
 				}
@@ -100,7 +99,6 @@ int main(int argc, char *argv[]){
 				flag+=2;
 				if (flag == 32){
 					copy(hashb,hash);
-					//strcpy(hashb,hash);
 					create_hash(hash,hashb);
 					flag = 0;
 				}
