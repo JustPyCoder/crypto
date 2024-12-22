@@ -53,6 +53,13 @@ void copy(char *hashb, char *hash){
 	}
 }
 
+void xor_hash(char *hash, char *cripto_data){
+	for(char i = 0; i < 32; i+=2){
+		hash[i] = hash[i] ^ cripto_data[i];
+		hash[i+1] = hash[i+1] ^ cripto_data[i];
+	}
+}
+
 int main(int argc, char *argv[]){
 	char work[5];
 	char flag = 0; 
@@ -62,6 +69,7 @@ int main(int argc, char *argv[]){
 	char hash[33];
 	char hashb[33];
 	unsigned char obj;
+	unsigned char cripto_data[32]; 
 
 	name_file(argv[1],start);
 	strcpy(end,start);
@@ -75,11 +83,13 @@ int main(int argc, char *argv[]){
 		FILE *endf = fopen(end,"wb");
 		if (startf != NULL){
 			while(fgets(&obj,2,startf)){
+				cripto_data[flag] = obj;
 				obj ^= (toohex(hash[flag])*16+toohex(hash[flag+1]));
 				fwrite(&obj,1,1,endf);
 				flag+=2;
 				if (flag == 32){
 					copy(hashb,hash);
+					xor_hash(hashb,cripto_data);
 					create_hash(hash,hashb);
 					flag = 0;
 				}
@@ -95,10 +105,12 @@ int main(int argc, char *argv[]){
 		if (startf != NULL){
 			while(fread(&obj,1,1,startf)){
 				obj ^= (toohex(hash[flag])*16+toohex(hash[flag+1]));
+				cripto_data[flag] = obj;
 				fprintf(endf,"%c",obj);
 				flag+=2;
 				if (flag == 32){
 					copy(hashb,hash);
+					xor_hash(hashb,cripto_data);
 					create_hash(hash,hashb);
 					flag = 0;
 				}
