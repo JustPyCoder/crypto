@@ -12,7 +12,7 @@ void format_file(char *file, char *end_file){
 }
 
 void toostr(unsigned char data,char *hash,char i){
-	unsigned char asciihex[16] = "0123456789ABCDEF";
+	unsigned char asciihex[16] = "0123456789abcdef";
 	unsigned char flag = 1;
 	unsigned char prom = 0;
 
@@ -36,7 +36,7 @@ void create_hash(char*data,char*key){
 }
 
 char toohex(char i){
-	char ascii[] = "0123456789ABCDEF"; 
+	char ascii[] = "0123456789abcdef"; 
 	for (char j = 0; j != 16; j++){
 		if (i == ascii[j]) return j;
 	}
@@ -48,9 +48,9 @@ void copy(char *hashb, char *hash){
 	}
 }
 
-void xor_hash(char *hash, char *cripto_data){
-	for(char i = 0; i < 32; i+=2){
-		hash[i] = hash[i] ^ cripto_data[i];
-		hash[i+1] = hash[i+1] ^ cripto_data[i];
+void xor_hash(char *hash, char *cripto_data_hash){
+	char ascii[] = "0123456789abcdef";
+	for(char i = 0; i < 32; i++){
+		hash[i] = ascii[toohex(hash[i]) ^ toohex(cripto_data_hash[i])];
 	}
 }
