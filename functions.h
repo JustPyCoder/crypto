@@ -49,8 +49,7 @@ void copy(char *hashb, char *hash){
 }
 
 void xor_hash(char *hash, char *cripto_data_hash){
-	char ascii[] = "0123456789abcdef";
 	for(char i = 0; i < 32; i++){
-		hash[i] = ascii[toohex(hash[i]) ^ toohex(cripto_data_hash[i])];
+		hash[i] = hash[i] ^ cripto_data_hash[i];
 	}
 }
