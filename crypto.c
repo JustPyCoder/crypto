@@ -15,12 +15,6 @@ int main(int argc, char *argv[]){
 	strcpy(end,start);
 	format_file(argv[1],work);
 	create_hash(hash,key);
-	printf("Hash1{\n");
-	for(int i = 0; i != 16; i++){
-		printf("%x\n",hash[i]);
-	}
-	printf("}\n");
-
 	if (strcmp(work,".txt")==0){
 		strcat(start,".txt");
 		strcat(end,".bin");
@@ -34,31 +28,11 @@ int main(int argc, char *argv[]){
 				obj ^= hash[i];
 				fwrite(&obj,1,1,endf);
 			}
-			printf("RandomData{\n");
-			for (int i = 0; i != 16; i++){
-				printf("%x\n",random_data[i]);
-			}
-			printf("}\n");
 			strcpy(hashd,hash);
 			create_hash(hash,hashd);
-			printf("Hash2{\n");
-			for(int i = 0; i != 16; i++){
-				printf("%x\n",hash[i]);
-			}
-			printf("}\n");
 			xor_hash(hash,random_data);
-			printf("XorData{\n");
-			for(int i = 0; i != 16; i++){
-				printf("%x\n",hash[i]);
-			}
-			printf("}\n");
 			strcpy(hashd,hash);
-			create_hash(hash,hashd);
-			printf("Hash3{\n");
-			for(int i = 0; i != 16; i++){
-				printf("%x\n",hash[i]);
-			}
-			printf("}\n");
+			create_hash(hash,hashd);і
 			while (fgets(&obj, 2, startf)){
 				obj^= hash[flag];
 				fwrite(&obj,1,1,endf);
