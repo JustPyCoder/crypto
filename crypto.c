@@ -15,6 +15,7 @@ int main(int argc, char *argv[]){
 	strcpy(end,start);
 	format_file(argv[1],work);
 	create_hash(hash,key);
+	
 	if (strcmp(work,".txt")==0){
 		strcat(start,".txt");
 		strcat(end,".bin");
