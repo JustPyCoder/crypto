@@ -1,103 +1,112 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<time.h>
-#include <string.h>
-#include <stdint.h>
-#include<math.h>
-#include<string.h>
-#include"md5.h"
 #include"functions.h"
 
 int main(int argc, char *argv[]){
 	char work[5];
-	char ascii[] = "0123456789abcdef";
 	char flag = 0; 
 	char start[255];
 	char end[255];
 	char *key = argv[2];
-	char hash[33];
-	char hashb[33];
-	char cripto_data_hash[33];
+	unsigned char hash[17];
+	unsigned char hashd[17];
 	unsigned char obj;
-	unsigned char cripto_data[33]; 
+	unsigned char random_data[17]; 
 
 	name_file(argv[1],start);
 	strcpy(end,start);
 	format_file(argv[1],work);
 	create_hash(hash,key);
-	
+	printf("Hash1{\n");
+	for(int i = 0; i != 16; i++){
+		printf("%x\n",hash[i]);
+	}
+	printf("}\n");
+
 	if (strcmp(work,".txt")==0){
 		strcat(start,".txt");
 		strcat(end,".bin");
 		FILE *startf = fopen(start,"r");
-		FILE *endf = fopen(end,"wb");
 		if (startf != NULL){
+			FILE *endf = fopen(end,"wb");
 			srand(time(NULL));
 			for(unsigned char i = 0; i != 16; i++){
 				obj = rand()%256; 
-				cripto_data[flag] = obj/16;
-				cripto_data[flag+1] = obj-(obj/16)*16;
-				obj ^= (toohex(hash[flag])*16+toohex(hash[flag+1]));
+				random_data[i] = obj;
+				obj ^= hash[i];
 				fwrite(&obj,1,1,endf);
-				flag+=2;
-				if (flag == 32){
-					copy(hashb,hash);
-					xor_hash(hashb,cripto_data);
-					create_hash(hash,hashb);
+			}
+			printf("RandomData{\n");
+			for (int i = 0; i != 16; i++){
+				printf("%x\n",random_data[i]);
+			}
+			printf("}\n");
+			strcpy(hashd,hash);
+			create_hash(hash,hashd);
+			printf("Hash2{\n");
+			for(int i = 0; i != 16; i++){
+				printf("%x\n",hash[i]);
+			}
+			printf("}\n");
+			xor_hash(hash,random_data);
+			printf("XorData{\n");
+			for(int i = 0; i != 16; i++){
+				printf("%x\n",hash[i]);
+			}
+			printf("}\n");
+			strcpy(hashd,hash);
+			create_hash(hash,hashd);
+			printf("Hash3{\n");
+			for(int i = 0; i != 16; i++){
+				printf("%x\n",hash[i]);
+			}
+			printf("}\n");
+			while (fgets(&obj, 2, startf)){
+				obj^= hash[flag];
+				fwrite(&obj,1,1,endf);
+				flag++;
+				if (flag == 16){
+					xor_hash(hash,random_data);
+					strcpy(hashd,hash);
+					create_hash(hash,hashd);
 					flag = 0;
 				}
 			}
-			while(fgets(&obj,2,startf)){
-				cripto_data[flag] = obj/16;
-				cripto_data[flag+1] = obj-(obj/16)*16;
-				obj ^= (toohex(hash[flag])*16+toohex(hash[flag+1]));
-				fwrite(&obj,1,1,endf);
-				flag+=2;
-				if (flag == 32){
-					copy(hashb,hash);
-					xor_hash(hashb,cripto_data);
-					create_hash(hash,hashb);
-					flag = 0;
-				}
-			}
+			fclose(endf);
+		} else {
+			printf("\nFile not found error");
 		}
 		fclose(startf);
-		fclose(endf);
 	} else if (strcmp(work,".bin")==0) {
 		strcat(start,".bin");
 		strcat(end,".txt");
 		FILE *startf = fopen(start,"rb");
-		FILE *endf = fopen(end,"w");
 		if (startf != NULL){
+			FILE *endf = fopen(end,"w");
 			for(unsigned char i = 0; i != 16; i++){
 				fread(&obj,1,1,startf);
-				obj ^= (toohex(hash[flag])*16+toohex(hash[flag+1]));
-				cripto_data[flag] = obj/16;
-				cripto_data[flag+1] = obj-(obj/16)*16;
-				flag+=2;
-				if (flag == 32){
-					copy(hashb,hash);
-					xor_hash(hashb,cripto_data);
-					create_hash(hash,hashb);
-					flag = 0;
-				}
+				obj ^= hash[i];
+				random_data[i] = obj;
 			}
-			while(fread(&obj,1,1,startf)){
-				obj ^= (toohex(hash[flag])*16+toohex(hash[flag+1]));
-				cripto_data[flag] = obj/16;
-				cripto_data[flag+1] = obj-(obj/16)*16;
+			strcpy(hashd,hash);
+			create_hash(hash,hashd);
+			xor_hash(hash,random_data);
+			strcpy(hashd,hash);
+			create_hash(hash,hashd);
+			while (fread(&obj,1,1,startf)){
+				obj ^= hash[flag];
 				fprintf(endf,"%c",obj);
-				flag+=2;
-				if (flag == 32){
-					copy(hashb,hash);
-					xor_hash(hashb,cripto_data);
-					create_hash(hash,hashb);
+				flag++;
+				if (flag == 16){
+					xor_hash(hash,random_data);
+					strcpy(hashd,hash);
+					create_hash(hash,hashd);
 					flag = 0;
 				}
 			}
-		} 
+			fclose(endf);
+		} else {
+			printf("\nFile not found error");
+		}
 		fclose(startf);
-		fclose(endf);
-	} else {printf("ERROR"); return 1;}
+	} else {printf("Format error"); return 1;}
 	return 0;
 }
