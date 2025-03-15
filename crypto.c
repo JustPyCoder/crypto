@@ -33,7 +33,7 @@ int main(int argc, char *argv[]){
 			create_hash(hash,hashd);
 			xor_hash(hash,random_data);
 			strcpy(hashd,hash);
-			create_hash(hash,hashd);і
+			create_hash(hash,hashd);
 			while (fgets(&obj, 2, startf)){
 				obj^= hash[flag];
 				fwrite(&obj,1,1,endf);
